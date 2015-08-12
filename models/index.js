@@ -18,10 +18,10 @@ function urlTitleGen(title) {
   var randomLength = Math.floor(Math.random() * 50);
   if(!title) {
     for(var i=0; i < randomLength; i++) {
-      title += String.fromCharCode(Math.floor(Math.random()*(93) + 33));
+      title += String.fromCharCode(Math.floor(Math.random()*93 + 33));
     }
   }
-  return title.replace(/\s/g,'_').replace(/[^\w]/g, '');
+  return title.replace(/\s+/g,'_').replace(/[^\w]/gi, '');
 }
 
 

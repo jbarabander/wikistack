@@ -31,12 +31,19 @@ router.post('/', function(req, res, next) {
     content: content
   });
   page.save()
-  .then(function(){
-    res.json(page);
+  .then(function(page){
+    res.redirect(page.route);
   })
-  .then(null, function(err){
-    console.error(err);
-  });
+  .then(null, console.error);
+});
+
+router.get('/:pageName', function(req,res,next) {
+  var pageName = req.params.pageName;
+  Page.findOne({'urlTitle': pageName}).exec()
+  .then(function(page) {
+    res.render('wikipage', page);
+  })
+  .then(null, console.error);
 });
 
 

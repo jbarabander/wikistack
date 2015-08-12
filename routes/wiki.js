@@ -16,7 +16,12 @@ var User = models.User;
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.redirect('/');
+  Page.find({}).exec()
+  .then(function(pages){
+    console.log(pages);
+    res.render('index', {pages: pages});
+  })
+  .then(null, console.error);
 });
 
 router.get('/add', function(req, res, next) {
@@ -30,11 +35,18 @@ router.post('/', function(req, res, next) {
     title: title,
     content: content
   });
-  page.save()
-  .then(function(page){
-    res.redirect(page.route);
+  console.log(req.body);
+  User.findOrCreate( {
+    name: req.body.author,
+    email: req.body["author-email"]
   })
-  .then(null, console.error);
+  .then(function(user){
+    page.author = user._id;
+    return page.save();})
+    .then(function(page){
+      res.redirect(page.route);
+    })
+    .then(null, console.error);
 });
 
 router.get('/:pageName', function(req,res,next) {

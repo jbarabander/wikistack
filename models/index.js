@@ -40,9 +40,20 @@ pageSchema.virtual('route').get(function() {
 });
 
 var userSchema = new mongoose.Schema({
-  name: {first: {type: String, required: true}, last: {type: String, required: true}},
+  name: {type: String, required: true},
   email: {type: String, required: true, unique: true}
 });
+
+userSchema.statics.findOrCreate = function(userObj) {
+  var self = this;
+  return self.findOne({email: userObj.email}).exec()
+    .then(function(user) {
+      if(user) return user;
+      return self.create({name: userObj.name, email: userObj.email});
+    }).then(null, console.error);
+};
+
+
 
 var Page = mongoose.model('Page', pageSchema);
 var User = mongoose.model('User', userSchema);

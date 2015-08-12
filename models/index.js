@@ -1,8 +1,9 @@
 var mongoose = require('mongoose');
+// Notice the `mongodb` protocol; Mongo is basically a kind of server,
+// which handles database requests and sends responses. It's async!
 mongoose.connect('mongodb://localhost/wikistack');
-var db = mongoose.connection('mongodb://localhost/wikistack');
-var db = mongoose.conection;
-db.on('error', console.error.bind(console, 'mongodb connection error: '));
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'mongodb connection error:'));
 
 var pageSchema = new mongoose.Schema({
   title:    {type: String, required: true},
@@ -12,6 +13,27 @@ var pageSchema = new mongoose.Schema({
   date:     {type: Date, default: Date.now},
   author:   {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
 });
+
+function urlTitleGen(title) {
+  var randomLength = Math.floor(Math.random() * 50);
+  if(!title) {
+    for(var i=0; i < randomLength; i++) {
+      title += String.fromCharCode(Math.floor(Math.random()*(93) + 33));
+    }
+  }
+  return title.replace(/\s/g,'_').replace(/[^\w]/g, '');
+}
+
+
+
+pageSchema.pre('validate', function(next) {
+  this.urlTitle = urlTitleGen(this.title);
+  next();
+});
+
+
+
+
 
 pageSchema.virtual('route').get(function() {
   return '/wiki/' + this.urlTitle;
